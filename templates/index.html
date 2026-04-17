@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Honeypot Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="navbar">
+        <a href="/">🏠 Dashboard</a>
+        <a href="/logs">📝 Logs</a>
+        <a href="/alerts">🚨 Alerts</a>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h1>🔐 Honeypot Dashboard</h1>
+            <p><b>Total Attacks:</b> {{ total_attacks }}</p>
+            <p><b>Top Attacker:</b> {{ top_attacker }}</p>
+        </div>
+
+        <div class="card">
+            <h2>Latest Logs</h2>
+            <table>
+                <tr>
+                    <th>Time</th>
+                    <th>IP</th>
+                    <th>Attempts</th>
+                </tr>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log.timestamp }}</td>
+                    <td>{{ log.ip }}</td>
+                    <td>{{ log.attempts }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>

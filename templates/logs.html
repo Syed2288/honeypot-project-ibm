@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Logs</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="navbar">
+        <a href="/">🏠 Dashboard</a>
+        <a href="/logs">📝 Logs</a>
+        <a href="/alerts">🚨 Alerts</a>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <h1>📝 All Attack Logs</h1>
+            <table>
+                <tr>
+                    <th>Time</th>
+                    <th>IP</th>
+                    <th>Attempts</th>
+                </tr>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log.timestamp }}</td>
+                    <td>{{ log.ip }}</td>
+                    <td>{{ log.attempts }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+
+</body>
+</html>
