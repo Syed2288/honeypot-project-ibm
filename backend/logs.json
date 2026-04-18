@@ -22,5 +22,45 @@
         "ip": "192.168.1.4",
         "attempts": 1,
         "message": "Access Denied! Unauthorized access detected."
+    },
+    {
+        "timestamp": "2026-04-17 09:24:08",
+        "ip": "127.0.0.1",
+        "attempts": 1,
+        "message": "Access Denied! Unauthorized access detected."
+    },
+    {
+        "timestamp": "2026-04-18 11:41:24",
+        "ip": "127.0.0.1",
+        "attempts": 1,
+        "type": "Unauthorized Access",
+        "message": "Access Denied! Unauthorized access detected."
+    },
+    {
+        "timestamp": "2026-04-18 13:11:13",
+        "ip": "127.0.0.1",
+        "attempts": 1,
+        "type": "Unauthorized Access",
+        "message": "Access Denied!"
+    },
+    {
+        "timestamp": "2026-04-18 13:48:52",
+        "ip": "127.0.0.1",
+        "attempts": 1,
+        "type": "Unauthorized Access",
+        "status": "Blocked",
+        "port": 8888,
+        "protocol": "TCP",
+        "message": "Unauthorized access attempt detected. Connection denied."
+    },
+    {
+        "timestamp": "2026-04-18 19:48:52",
+        "ip": "127.0.0.1",
+        "attempts": 1,
+        "type": "Unauthorized Access",
+        "status": "Blocked",
+        "port": 8888,
+        "protocol": "TCP",
+        "message": "Unauthorized access attempt detected. Connection denied."
     }
 ]

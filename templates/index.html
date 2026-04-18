@@ -2,41 +2,128 @@
 <html>
 <head>
     <title>Honeypot Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 
-    <div class="navbar">
-        <a href="/">🏠 Dashboard</a>
-        <a href="/logs">📝 Logs</a>
-        <a href="/alerts">🚨 Alerts</a>
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="nav-left">
+        🔐 Honeypot System
     </div>
 
-    <div class="container">
-        <div class="card">
-            <h1>🔐 Honeypot Dashboard</h1>
-            <p><b>Total Attacks:</b> {{ total_attacks }}</p>
-            <p><b>Top Attacker:</b> {{ top_attacker }}</p>
+    <div class="nav-right">
+        <a href="/" class="{% if request.path == '/' %}active{% endif %}">🏠 Dashboard</a>
+        <a href="/logs" class="{% if request.path == '/logs' %}active{% endif %}">📝 Logs</a>
+        <a href="/alerts" class="{% if request.path == '/alerts' %}active{% endif %}">🚨 Alerts</a>
+    </div>
+</div>
+
+<!-- MAIN CONTAINER -->
+<div class="container">
+
+    <!-- TITLE -->
+    <div class="card">
+        <h1>🔐 Honeypot Dashboard</h1>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats">
+        <div class="stat-box">
+            <h3>Total Attacks</h3>
+            <p>{{ total_attacks }}</p>
         </div>
 
-        <div class="card">
-            <h2>Latest Logs</h2>
-            <table>
-                <tr>
-                    <th>Time</th>
-                    <th>IP</th>
-                    <th>Attempts</th>
-                </tr>
-                {% for log in logs %}
-                <tr>
-                    <td>{{ log.timestamp }}</td>
-                    <td>{{ log.ip }}</td>
-                    <td>{{ log.attempts }}</td>
-                </tr>
-                {% endfor %}
-            </table>
+        <div class="stat-box">
+            <h3>Top Attacker</h3>
+            <p>{{ top_attacker }}</p>
         </div>
     </div>
+
+    <!-- LOG TABLE -->
+    <div class="card">
+        <h2 class="section-title">📊 Latest Logs</h2>
+
+        <table>
+            <tr>
+                <th>Time</th>
+                <th>IP</th>
+                <th>Attempts</th>
+                <th>Type</th>
+                <th>Location</th>
+            </tr>
+
+            {% for log in logs %}
+            <tr class="{% if log.attempts >= 3 %}danger{% endif %}">
+                <td>{{ log.timestamp }}</td>
+                <td>{{ log.ip }}</td>
+                <td>{{ log.attempts }}</td>
+                <td class="{% if log.attempts >= 3 %}warning{% else %}safe{% endif %}">
+                    {{ log.type }}
+                </td>
+                <td>{{ log.location }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+    <!-- 📊 SMALL GRAPH -->
+    <div class="card" style="max-width: 600px; margin: auto;">
+        <h2 class="section-title">📊 Live Attack Graph</h2>
+        <canvas id="attackChart"></canvas>
+    </div>
+
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+let chart;
+
+async function loadChart() {
+    try {
+        const res = await fetch("/api/stats");
+        const data = await res.json();
+
+        const labels = Object.keys(data);
+        const values = Object.values(data);
+
+        const ctx = document.getElementById("attackChart");
+
+        if (chart) {
+            chart.destroy();
+        }
+
+        chart = new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: "Attack Attempts",
+                    data: values,
+                    backgroundColor: "rgba(26, 115, 232, 0.7)"
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+    } catch (err) {
+        console.error("Graph Error:", err);
+    }
+}
+
+// first load
+loadChart();
+
+// auto refresh every 5 sec
+setInterval(loadChart, 5000);
+</script>
 
 </body>
 </html>

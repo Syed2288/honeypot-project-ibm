@@ -2,35 +2,54 @@
 <html>
 <head>
     <title>Alerts</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 
-    <div class="navbar">
-        <a href="/">🏠 Dashboard</a>
-        <a href="/logs">📝 Logs</a>
-        <a href="/alerts">🚨 Alerts</a>
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="nav-left">
+        🔐 Honeypot System
     </div>
 
-    <div class="container">
-        <div class="card">
-            <h1>🚨 Suspicious Alerts</h1>
-            <table>
-                <tr>
-                    <th>Time</th>
-                    <th>IP</th>
-                    <th>Attempts</th>
-                </tr>
-                {% for log in alerts %}
-                <tr>
-                    <td>{{ log.timestamp }}</td>
-                    <td>{{ log.ip }}</td>
-                    <td>{{ log.attempts }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
+    <div class="nav-right">
+        <a href="/" class="{% if request.path == '/' %}active{% endif %}">🏠 Dashboard</a>
+        <a href="/logs" class="{% if request.path == '/logs' %}active{% endif %}">📝 Logs</a>
+        <a href="/alerts" class="{% if request.path == '/alerts' %}active{% endif %}">🚨 Alerts</a>
     </div>
+</div>
+
+<!-- CONTENT -->
+<div class="container">
+
+    <div class="card">
+        <h1>🚨 Suspicious Alerts</h1>
+        <p>Showing attacks with 3+ attempts</p>
+    </div>
+
+    <div class="card">
+        <table>
+            <tr>
+                <th>Time</th>
+                <th>IP Address</th>
+                <th>Attempts</th>
+                <th>Attack Type</th>
+                <th>Location</th>
+            </tr>
+
+            {% for log in alerts %}
+            <tr class="danger">
+                <td>{{ log.timestamp }}</td>
+                <td>{{ log.ip }}</td>
+                <td>{{ log.attempts }}</td>
+                <td class="warning">{{ log.type }}</td>
+                <td>{{ log.location }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+</div>
 
 </body>
 </html>

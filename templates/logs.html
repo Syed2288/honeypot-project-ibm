@@ -1,36 +1,57 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>All Logs</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Logs</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 
-    <div class="navbar">
-        <a href="/">🏠 Dashboard</a>
-        <a href="/logs">📝 Logs</a>
-        <a href="/alerts">🚨 Alerts</a>
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="nav-left">
+        🔐 Honeypot System
     </div>
 
-    <div class="container">
-        <div class="card">
-            <h1>📝 All Attack Logs</h1>
-            <table>
-                <tr>
-                    <th>Time</th>
-                    <th>IP</th>
-                    <th>Attempts</th>
-                </tr>
-                {% for log in logs %}
-                <tr>
-                    <td>{{ log.timestamp }}</td>
-                    <td>{{ log.ip }}</td>
-                    <td>{{ log.attempts }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-        </div>
+    <div class="nav-right">
+        <a href="/" class="{% if request.path == '/' %}active{% endif %}">🏠 Dashboard</a>
+        <a href="/logs" class="{% if request.path == '/logs' %}active{% endif %}">📝 Logs</a>
+        <a href="/alerts" class="{% if request.path == '/alerts' %}active{% endif %}">🚨 Alerts</a>
     </div>
+</div>
+
+<!-- CONTENT -->
+<div class="container">
+
+    <div class="card">
+        <h1>📝 All Attack Logs</h1>
+        <p>Total Records: <strong>{{ logs|length }}</strong></p>
+    </div>
+
+    <div class="card">
+        <table>
+            <tr>
+                <th>Time</th>
+                <th>IP Address</th>
+                <th>Attempts</th>
+                <th>Attack Type</th>
+                <th>Location</th>
+            </tr>
+
+            {% for log in logs %}
+            <tr class="{% if log.attempts >= 3 %}danger{% endif %}">
+                <td>{{ log.timestamp }}</td>
+                <td>{{ log.ip }}</td>
+                <td>{{ log.attempts }}</td>
+                <td class="{% if log.attempts >= 3 %}warning{% else %}safe{% endif %}">
+                    {{ log.type }}
+                </td>
+                <td>{{ log.location }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+</div>
 
 </body>
 </html>

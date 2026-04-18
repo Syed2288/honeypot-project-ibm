@@ -27,8 +27,10 @@ def start_honeypot():
     server.bind((HOST, PORT))
     server.listen(5)
 
-    print("🔥 Honeypot Started")
-    print(f"📡 Listening on port {PORT}")
+    # ✅ CORRECT INDENTATION
+    print("🔥 Honeypot Started Successfully")
+    print(f"📡 Listening on PORT {PORT}...")
+    print("🛡️ Waiting for attackers...\n")
 
     while True:
         client_socket, addr = server.accept()
@@ -37,11 +39,18 @@ def start_honeypot():
 
         ip_tracker[ip] = ip_tracker.get(ip, 0) + 1
 
+        # ✅ FIXED BLOCK
         log_entry = {
             "timestamp": time_now,
             "ip": ip,
             "attempts": ip_tracker[ip],
-            "message": "Access Denied! Unauthorized access detected."
+            "type": "Brute Force Attempt" if ip_tracker[ip] >= 3 else "Unauthorized Access",
+            "status": "Blocked",
+            "port": PORT,
+            "protocol": "TCP",
+            "message": "Multiple suspicious attempts detected! Possible brute force attack blocked."
+                       if ip_tracker[ip] >= 3
+                       else "Unauthorized access attempt detected. Connection denied."
         }
 
         save_log(log_entry)
@@ -49,7 +58,14 @@ def start_honeypot():
         client_socket.send(log_entry["message"].encode())
         client_socket.close()
 
-        print(f"⚠️ {ip} | Attempts: {ip_tracker[ip]}")
+        # ✅ IMPROVED OUTPUT
+        print("\n🚨 New Connection Detected!")
+        print(f"📅 Time      : {time_now}")
+        print(f"🌐 IP        : {ip}")
+        print(f"🔁 Attempts  : {ip_tracker[ip]}")
+        print(f"⚠️ Type      : {log_entry['type']}")
+        print(f"💬 Message   : {log_entry['message']}")
+        print("-" * 40)
 
 
 if __name__ == "__main__":
