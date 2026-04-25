@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, redirect, url_for
 import json
 import os
 import requests
@@ -68,7 +68,7 @@ def alerts():
     return render_template("alerts.html", alerts=alerts)
 
 
-# ✅ LIVE GRAPH API
+# ✅ GRAPH API
 @app.route("/api/stats")
 def stats():
     logs = load_logs()
@@ -81,7 +81,19 @@ def stats():
     return jsonify(counts)
 
 
-# ✅ MUST BE AT END (OUTSIDE FUNCTIONS)
+# ✅ CLEAR LOGS FEATURE (NEW)
+@app.route("/clear_logs", methods=["POST"])
+def clear_logs():
+    try:
+        with open(LOG_FILE, "w") as f:
+            json.dump([], f)   # clears logs safely
+    except Exception as e:
+        print("Error clearing logs:", e)
+
+    return redirect(url_for("dashboard"))
+
+
+# ✅ RUN SERVER
 if __name__ == "__main__":
     print("🚀 Starting Flask Server...")
     app.run(debug=True, host="127.0.0.1", port=5000)
