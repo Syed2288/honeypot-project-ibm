@@ -1,36 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Honeypot Dashboard</title>
-
-    <!-- CSS -->
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 
-<!-- NAVBAR -->
 <div class="navbar">
-    <div class="nav-left">
-        🔐 Honeypot System
-    </div>
+    <div class="nav-left">Honeypot System</div>
 
     <div class="nav-right">
-        <a href="/" class="{% if request.path == '/' %}active{% endif %}">🏠 Dashboard</a>
-        <a href="/logs" class="{% if request.path == '/logs' %}active{% endif %}">📝 Logs</a>
-        <a href="/alerts" class="{% if request.path == '/alerts' %}active{% endif %}">🚨 Alerts</a>
+        <a href="/" class="{% if request.path == '/' %}active{% endif %}">Dashboard</a>
+        <a href="/logs" class="{% if request.path == '/logs' %}active{% endif %}"> Logs</a>
+        <a href="/alerts" class="{% if request.path == '/alerts' %}active{% endif %}"> Alerts</a>
     </div>
 </div>
 
-<!-- MAIN CONTAINER -->
 <div class="container">
 
-    <!-- TITLE -->
-    <div class="card">
-        <h1>🔐 Honeypot Dashboard</h1>
-    </div>
+    <div class="top-section">
+        <div class="card title-card">
+            <h2> Honeypot Dashboard</h2>
+            <p>Live monitoring of suspicious activity</p>
+        </div>
 
-    <!-- STATS -->
-    <div class="stats">
         <div class="stat-box">
             <h3>Total Attacks</h3>
             <p>{{ total_attacks }}</p>
@@ -38,48 +33,62 @@
 
         <div class="stat-box">
             <h3>Top Attacker</h3>
-            <p>{{ top_attacker }}</p>
+            <p style="font-size:18px;">{{ top_attacker }}</p>
         </div>
     </div>
 
-    <!-- LOG TABLE -->
-    <div class="card">
-        <h2 class="section-title">📊 Latest Logs</h2>
+    <div class="dashboard-grid">
+        <div class="card">
+            <div class="log-header">
+                <h3 class="section-title"> Latest Logs</h3>
 
-        <table>
-            <tr>
-                <th>Time</th>
-                <th>IP</th>
-                <th>Attempts</th>
-                <th>Type</th>
-                <th>Location</th>
-            </tr>
+                <form action="/clear_logs" method="POST">
+                    <button type="submit" class="clear-btn"
+                        onclick="return confirm('Are you sure you want to clear all logs?')">
+                        🗑 Clear Logs
+                    </button>
+                </form>
+            </div>
 
-            {% for log in logs %}
-            <tr class="{% if log.attempts >= 3 %}danger{% endif %}">
-                <td>{{ log.timestamp }}</td>
-                <td>{{ log.ip }}</td>
-                <td>{{ log.attempts }}</td>
-                <td class="{% if log.attempts >= 3 %}warning{% else %}safe{% endif %}">
-                    {{ log.type }}
-                </td>
-                <td>{{ log.location }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>IP</th>
+                            <th>Try</th>
+                            <th>Type</th>
+                            <th>Location</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs[:5] %}
+                        <tr class="{% if log.attempts >= 3 %}danger{% endif %}">
+                            <td>{{ log.timestamp }}</td>
+                            <td>{{ log.ip }}</td>
+                            <td>{{ log.attempts }}</td>
+                            <td class="{% if log.attempts >= 3 %}warning{% else %}safe{% endif %}">
+                                {{ log.type }}
+                            </td>
+                            <td>{{ log.location }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-    <!-- 📊 SMALL GRAPH -->
-    <div class="card" style="max-width: 600px; margin: auto;">
-        <h2 class="section-title">📊 Live Attack Graph</h2>
-        <canvas id="attackChart"></canvas>
+        <div class="card">
+            <h3 class="section-title"> Attack Graph</h3>
+            <div class="chart-container">
+                <canvas id="attackChart"></canvas>
+            </div>
+        </div>
     </div>
 
 </div>
 
-<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
 let chart;
 
@@ -91,25 +100,34 @@ async function loadChart() {
         const labels = Object.keys(data);
         const values = Object.values(data);
 
-        const ctx = document.getElementById("attackChart");
+        const ctx = document.getElementById("attackChart").getContext("2d");
 
-        if (chart) {
-            chart.destroy();
-        }
+        if (chart) chart.destroy();
 
         chart = new Chart(ctx, {
             type: "bar",
             data: {
                 labels: labels,
                 datasets: [{
-                    label: "Attack Attempts",
+                    label: "Attacks",
                     data: values,
-                    backgroundColor: "rgba(26, 115, 232, 0.7)"
+                    backgroundColor: "rgba(26, 115, 232, 0.7)",
+                    borderRadius: 6,
+                    barThickness: 18
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { stepSize: 1 }
+                    }
+                }
             }
         });
 
@@ -118,10 +136,7 @@ async function loadChart() {
     }
 }
 
-// first load
 loadChart();
-
-// auto refresh every 5 sec
 setInterval(loadChart, 5000);
 </script>
 

@@ -1,54 +1,58 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Logs</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logs - Honeypot System</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 
-<!-- NAVBAR -->
 <div class="navbar">
-    <div class="nav-left">
-        🔐 Honeypot System
-    </div>
-
+    <div class="nav-left"> Honeypot System</div>
     <div class="nav-right">
-        <a href="/" class="{% if request.path == '/' %}active{% endif %}">🏠 Dashboard</a>
-        <a href="/logs" class="{% if request.path == '/logs' %}active{% endif %}">📝 Logs</a>
-        <a href="/alerts" class="{% if request.path == '/alerts' %}active{% endif %}">🚨 Alerts</a>
+        <a href="/" class="{% if request.path == '/' %}active{% endif %}"> Dashboard</a>
+        <a href="/logs" class="{% if request.path == '/logs' %}active{% endif %}"> Logs</a>
+        <a href="/alerts" class="{% if request.path == '/alerts' %}active{% endif %}"> Alerts</a>
     </div>
 </div>
 
-<!-- CONTENT -->
 <div class="container">
 
-    <div class="card">
-        <h1>📝 All Attack Logs</h1>
+    <div class="card title-card">
+        <h2> All Attack Logs</h2>
         <p>Total Records: <strong>{{ logs|length }}</strong></p>
     </div>
 
     <div class="card">
-        <table>
-            <tr>
-                <th>Time</th>
-                <th>IP Address</th>
-                <th>Attempts</th>
-                <th>Attack Type</th>
-                <th>Location</th>
-            </tr>
+        <h3 class="section-title">Attack Log Details</h3>
 
-            {% for log in logs %}
-            <tr class="{% if log.attempts >= 3 %}danger{% endif %}">
-                <td>{{ log.timestamp }}</td>
-                <td>{{ log.ip }}</td>
-                <td>{{ log.attempts }}</td>
-                <td class="{% if log.attempts >= 3 %}warning{% else %}safe{% endif %}">
-                    {{ log.type }}
-                </td>
-                <td>{{ log.location }}</td>
-            </tr>
-            {% endfor %}
-        </table>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>IP Address</th>
+                        <th>Attempts</th>
+                        <th>Attack Type</th>
+                        <th>Location</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr class="{% if log.attempts >= 3 %}danger{% endif %}">
+                        <td>{{ log.timestamp }}</td>
+                        <td>{{ log.ip }}</td>
+                        <td>{{ log.attempts }}</td>
+                        <td class="{% if log.attempts >= 3 %}warning{% else %}safe{% endif %}">
+                            {{ log.type }}
+                        </td>
+                        <td>{{ log.location }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
 </div>
